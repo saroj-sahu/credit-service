@@ -6,6 +6,7 @@ import java.security.spec.InvalidKeySpecException;
 import com.cr.config.JWTTokenHelper;
 import com.cr.request.AuthenticationRequest;
 import com.cr.response.LoginResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,6 +18,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
 
+@Tag(description = "Authrization api's that provides access to application",
+        name = "Authorization API")
 @RequestMapping("/api")
 @RestController
 @CrossOrigin

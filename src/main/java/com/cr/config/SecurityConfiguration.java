@@ -2,6 +2,10 @@ package com.cr.config;
 
 import com.cr.repository.UserDetailsRepository;
 import com.cr.service.CustomUserService;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Contact;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.info.License;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,7 +39,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
 	RestAuthenticationEntryPoint authenticationEntryPoint;
 
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception{
-		auth.inMemoryAuthentication().withUser("credit").password(passwordEncoder().encode("admin")).authorities("USER", "ADMIN");
+		auth.inMemoryAuthentication().withUser("acys@gmail.com").password(passwordEncoder().encode("admin")).authorities("USER", "ADMIN");
 		auth.userDetailsService(userService).passwordEncoder(passwordEncoder());
 	}
 
@@ -43,8 +47,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
 	protected void configure(HttpSecurity http) throws Exception {
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().exceptionHandling()
 				.authenticationEntryPoint(authenticationEntryPoint).and()
-				.authorizeRequests((request) -> request.antMatchers("/h2-console/**", "/api/login").permitAll()
-						.antMatchers(HttpMethod.OPTIONS, "/**").permitAll().anyRequest().authenticated())
+				.authorizeRequests((request) -> request.antMatchers("/h2-console/**", "/api/login", "/api/signup").permitAll()
+						.antMatchers(HttpMethod.GET, "/**").permitAll()
+						.antMatchers("/swagger-ui/**", "/javainuse-openapi/**").permitAll().anyRequest().authenticated())
 				.addFilterBefore(new JWTAuthenticationFilter(userService, jWTTokenHelper),
 						UsernamePasswordAuthenticationFilter.class);
 
@@ -60,5 +65,20 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
 	@Override
 	public AuthenticationManager authenticationManagerBean() throws Exception {
 		return super.authenticationManagerBean();
+	}
+
+	@Bean
+	public OpenAPI openApi() {
+		return new OpenAPI()
+				.info(new Info()
+						.title("Credit Service")
+						.description("Credit Service API")
+						.version("v1.0")
+						.contact(new Contact()
+								.name("Saroj")
+								.email("88sarojsahu@gmail.com"))
+						.termsOfService("TOC")
+						.license(new License().name("License").url("#"))
+				);
 	}
 }
