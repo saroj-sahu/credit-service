@@ -18,7 +18,6 @@ public class UserProfileRequest {
     private String rank;
     private Float yearsOfService;
     private String mos;
-    private File rankIcon;
 
     public String getId() {
         return id;
@@ -74,9 +73,5 @@ public class UserProfileRequest {
 
     public String getMos() {
         return mos;
-    }
-
-    public File getRankIcon() {
-        return rankIcon;
     }
 }

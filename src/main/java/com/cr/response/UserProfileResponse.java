@@ -17,7 +17,7 @@ public class UserProfileResponse {
     private String rank;
     private Float yearsOfService;
     private String mos;
-    private File rankIcon;
+    private byte [] rankIcon;
 
     public String getFirstName() {
         return firstName;
@@ -123,11 +123,11 @@ public class UserProfileResponse {
         this.mos = mos;
     }
 
-    public File getRankIcon() {
+    public byte[] getRankIcon() {
         return rankIcon;
     }
 
-    public void setRankIcon(File rankIcon) {
+    public void setRankIcon(byte[] rankIcon) {
         this.rankIcon = rankIcon;
     }
 }

@@ -81,7 +81,7 @@ public class ReferenceController {
                     description = "${api.response-codes.notFound.desc}",
                     content = { @Content(examples = { @ExampleObject(value = "") }) }) })
     @GetMapping(path = "/cities")
-    public ResponseEntity<List<CityResponse>> getCities(@PathVariable(name = "stateId") Long stateId){
+    public ResponseEntity<List<CityResponse>> getCities(@RequestParam(name = "stateId") Long stateId){
 
         List<City> cityList = cityRepository.findAllByStateId(stateId);
         List<CityResponse> cityResponses = new ArrayList<>();
@@ -131,7 +131,7 @@ public class ReferenceController {
                     description = "${api.response-codes.notFound.desc}",
                     content = { @Content(examples = { @ExampleObject(value = "") }) }) })
     @GetMapping(path = "/rank")
-    public ResponseEntity<List<RankResponse>> getRank(@PathVariable (name = "branchId") Long branchId){
+    public ResponseEntity<List<RankResponse>> getRank(@RequestParam (name = "branchId") Long branchId){
 
         List<Rank> rankList = rankRepository.findAllByBranchId(branchId);
         List<RankResponse> rankResponses = new ArrayList<>();

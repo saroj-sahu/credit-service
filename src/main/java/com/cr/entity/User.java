@@ -81,9 +81,6 @@ public class User implements UserDetails {
 	@Column(name = "mos")
 	private String mos;
 
-	@Column(name = "rank_icon")
-	private File rankIcon;
-
 	@Column(name = "enabled")
 	private boolean enabled=true;
 

@@ -1,8 +1,10 @@
 package com.cr.controller;
 
 import com.cr.entity.Authority;
+import com.cr.entity.Rank;
 import com.cr.entity.User;
 import com.cr.model.EmailDetails;
+import com.cr.repository.RankRepository;
 import com.cr.repository.UserDetailsRepository;
 import com.cr.request.PasswordResetRequest;
 import com.cr.request.UserProfileRequest;
@@ -11,9 +13,12 @@ import com.cr.service.EmailService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -28,11 +33,15 @@ public class UserInfoController {
     UserDetailsRepository userDetailsRepository;
 
     @Autowired
+    RankRepository rankRepository;
+
+    @Autowired
     EmailService emailService;
 
     @Value("server.name")
     String serverName;
 
+    ClassPathResource imageFile = new ClassPathResource("img/img2.png");
 
     @PostMapping(path = "/update")
     public ResponseEntity update(@RequestBody UserProfileRequest request){
@@ -104,8 +113,9 @@ public class UserInfoController {
     }
 
     @GetMapping(path="/userInfo")
-    public ResponseEntity<UserProfileResponse> getUserProfile(@PathVariable (name = "userName") String userName){
+    public ResponseEntity<UserProfileResponse> getUserProfile(@RequestParam (name = "userName") String userName) throws IOException {
         Optional<User> user = userDetailsRepository.findByUserName(userName);
+
         UserProfileResponse response = new UserProfileResponse();
         if(user.isPresent()){
 
@@ -120,6 +130,13 @@ public class UserInfoController {
             response.setState(user.get().getState());
             response.setMos(user.get().getMos());
             response.setRank(user.get().getMilitaryRank());
+            /*if(user.get().getMilitaryRank()!= null && !user.get().getMilitaryRank().isEmpty()){
+                Rank rank = rankRepository.findByRankName(user.get().getMilitaryRank());
+                response.setRankIcon();
+            }*/
+            byte[] imageBytes = StreamUtils.copyToByteArray(imageFile.getInputStream());
+            response.setRankIcon(imageBytes);
+
         }
         return ResponseEntity.ok(response);
     }

@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface RankRepository extends JpaRepository<Rank, Long> {
     List<Rank> findAllByBranchId(Long branchId);
+    Rank findByRankName(String rankName);
 }

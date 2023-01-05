@@ -18,6 +18,20 @@ public class State {
     @OneToMany(mappedBy = "state")
     private List<City> cityList;
 
+    @OneToOne(orphanRemoval = true)
+    @JoinTable(name = "states_t_user",
+            joinColumns = @JoinColumn(name = "state_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private User user;
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     public Long getId() {
         return id;
     }

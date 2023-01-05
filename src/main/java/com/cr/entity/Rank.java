@@ -1,6 +1,8 @@
 package com.cr.entity;
 
 import javax.persistence.*;
+import java.io.File;
+import java.sql.Blob;
 
 @Table(name = "RANK_T")
 @Entity
@@ -15,6 +17,9 @@ public class Rank {
 
     @Column(name = "rank_name", nullable = false)
     private String rankName;
+
+    @Column(name = "rank_img", nullable = true)
+    private Blob rankImage;
 
     @ManyToOne
     @JoinColumn(name = "branch_id")
@@ -51,5 +56,13 @@ public class Rank {
 
     public void setRankName(String rankName) {
         this.rankName = rankName;
+    }
+
+    public Blob getRankImage() {
+        return rankImage;
+    }
+
+    public void setRankImage(Blob rankImage) {
+        this.rankImage = rankImage;
     }
 }
