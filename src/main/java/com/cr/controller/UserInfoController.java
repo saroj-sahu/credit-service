@@ -38,7 +38,7 @@ public class UserInfoController {
     @Autowired
     EmailService emailService;
 
-    @Value("server.name")
+    @Value("${service.host}")
     String serverName;
 
     ClassPathResource imageFile = new ClassPathResource("img/img2.png");
