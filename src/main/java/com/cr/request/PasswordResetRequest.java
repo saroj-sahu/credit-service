@@ -3,11 +3,20 @@ package com.cr.request;
 public class PasswordResetRequest {
 
     private String userName;
+    private String currentPassword;
     private String password;
     private String confirmPassword;
 
     public String getUserName() {
         return userName;
+    }
+
+    public String getCurrentPassword() {
+        return currentPassword;
+    }
+
+    public void setCurrentPassword(String currentPassword) {
+        this.currentPassword = currentPassword;
     }
 
     public void setUserName(String userName) {

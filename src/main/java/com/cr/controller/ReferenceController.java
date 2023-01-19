@@ -12,6 +12,7 @@ import com.cr.response.BranchResponse;
 import com.cr.response.CityResponse;
 import com.cr.response.RankResponse;
 import com.cr.response.StateResponse;
+import com.cr.util.ExcelHelper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -19,9 +20,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.sql.rowset.serial.SerialBlob;
+import java.io.IOException;
+import java.sql.Blob;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -44,6 +51,31 @@ public class ReferenceController {
 
     @Autowired
     private RankRepository rankRepository;
+
+    @PostMapping("/uploadStates")
+    public ResponseEntity uploadStateFile(@RequestParam("file") MultipartFile file) {
+        String message = "";
+
+        if (ExcelHelper.hasExcelFormat(file)) {
+            try {
+                try {
+                    List<State> states = ExcelHelper.excelToStates(file.getInputStream());
+                    stateRepository.saveAll(states);
+                } catch (IOException e) {
+                    throw new RuntimeException("fail to store excel data: " + e.getMessage());
+                }
+
+                message = "Uploaded the file successfully: " + file.getOriginalFilename();
+                return (ResponseEntity) ResponseEntity.ok();
+            } catch (Exception e) {
+                message = "Could not upload the file: " + file.getOriginalFilename() + "!";
+                return (ResponseEntity) ResponseEntity.ok();
+            }
+        }
+
+        message = "Please upload an excel file!";
+        return (ResponseEntity) ResponseEntity.badRequest();
+    }
 
     @Operation(summary = "Get states",
             description = "Provides all available state list in US")
@@ -68,6 +100,36 @@ public class ReferenceController {
         });
         return ResponseEntity.ok(stateResponses);
     }
+
+    @PostMapping("/uploadCities")
+    public ResponseEntity uploadCityFile(@RequestParam("file") MultipartFile file) {
+        String message = "";
+
+        if (ExcelHelper.hasExcelFormat(file)) {
+            try {
+                try {
+                    List<City> cities = ExcelHelper.excelToCities(file.getInputStream());
+                    cities.stream().forEach(city -> {
+                        State state = stateRepository.findByStateName(city.getState().getStateName());
+                        city.setState(state);
+                    });
+                    cityRepository.saveAll(cities);
+                } catch (IOException e) {
+                    throw new RuntimeException("fail to store excel data: " + e.getMessage());
+                }
+
+                message = "Uploaded the file successfully: " + file.getOriginalFilename();
+                return (ResponseEntity) ResponseEntity.ok();
+            } catch (Exception e) {
+                message = "Could not upload the file: " + file.getOriginalFilename() + "!";
+                return (ResponseEntity) ResponseEntity.ok();
+            }
+        }
+
+        message = "Please upload an excel file!";
+        return (ResponseEntity) ResponseEntity.badRequest();
+    }
+
 
     @Operation(summary = "Get cities",
             description = "Provides all available cities list in given state")
@@ -94,6 +156,32 @@ public class ReferenceController {
         return ResponseEntity.ok(cityResponses);
     }
 
+    @PostMapping("/uploadBranch")
+    public ResponseEntity uploadBranchFile(@RequestParam("file") MultipartFile file) {
+        String message = "";
+
+        if (ExcelHelper.hasExcelFormat(file)) {
+            try {
+                try {
+                    List<Branch> branches = ExcelHelper.excelToBranch(file.getInputStream());
+                    branchRepository.saveAll(branches);
+                } catch (IOException e) {
+                    throw new RuntimeException("fail to store excel data: " + e.getMessage());
+                }
+
+                message = "Uploaded the file successfully: " + file.getOriginalFilename();
+                return (ResponseEntity) ResponseEntity.ok();
+            } catch (Exception e) {
+                message = "Could not upload the file: " + file.getOriginalFilename() + "!";
+                return (ResponseEntity) ResponseEntity.ok();
+            }
+        }
+
+        message = "Please upload an excel file!";
+        return (ResponseEntity) ResponseEntity.badRequest();
+    }
+
+
     @Operation(summary = "Get branch",
             description = "Provides all available branch list of US military")
     @ApiResponses(value = {
@@ -119,6 +207,48 @@ public class ReferenceController {
         return ResponseEntity.ok(branchResponses);
     }
 
+    @PostMapping("/uploadRanks")
+    public ResponseEntity uploadRankFile(@RequestParam("file") MultipartFile file) {
+        String message = "";
+
+        if (ExcelHelper.hasExcelFormat(file)) {
+            try {
+                try {
+                    List<Rank> ranks = ExcelHelper.excelToRank(file.getInputStream());
+                    ranks.stream().forEach(rank -> {
+                        Branch branch = branchRepository.findByBranchName(rank.getBranch().getBranchName());
+                        rank.setBranch(branch);
+                    });
+                    rankRepository.saveAll(ranks);
+                } catch (IOException e) {
+                    throw new RuntimeException("fail to store excel data: " + e.getMessage());
+                }
+
+                message = "Uploaded the file successfully: " + file.getOriginalFilename();
+                return (ResponseEntity) ResponseEntity.ok();
+            } catch (Exception e) {
+                message = "Could not upload the file: " + file.getOriginalFilename() + "!";
+                return (ResponseEntity) ResponseEntity.ok();
+            }
+        }
+
+        message = "Please upload an excel file!";
+        return (ResponseEntity) ResponseEntity.badRequest();
+    }
+
+
+    @PostMapping("/uploadRankImage")
+    public ResponseEntity uploadRankImageFile(@RequestParam("rankName") String rankName, @RequestParam("file") MultipartFile file) throws IOException, SQLException {
+        String message = "";
+        Rank rank = rankRepository.findByRankName(rankName);
+        byte []byteArray = file.getBytes();
+        Blob blob = new SerialBlob(byteArray);
+        rank.setRankImage(blob);
+        rankRepository.save(rank);
+        return (ResponseEntity) ResponseEntity.ok();
+    }
+
+
     @Operation(summary = "Get rank",
             description = "Provides all available rank list in US Military")
     @ApiResponses(value = {
@@ -139,6 +269,11 @@ public class ReferenceController {
             RankResponse response = new RankResponse();
             response.setRankId(rank.getId());
             response.setRank(rank.getRankName());
+            try {
+                response.setRankImage(rank.getRankImage().getBytes(1l, (int)rank.getRankImage().length()));
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
             rankResponses.add(response);
         });
         return ResponseEntity.ok(rankResponses);

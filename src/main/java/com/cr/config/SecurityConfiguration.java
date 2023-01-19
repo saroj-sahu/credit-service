@@ -39,7 +39,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
 	RestAuthenticationEntryPoint authenticationEntryPoint;
 
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception{
-		auth.inMemoryAuthentication().withUser("acys@gmail.com").password(passwordEncoder().encode("admin")).authorities("USER", "ADMIN");
+//		auth.inMemoryAuthentication().withUser("no1saroj@gmail.com").password(passwordEncoder().encode("admin")).authorities("USER", "ADMIN");
 		auth.userDetailsService(userService).passwordEncoder(passwordEncoder());
 	}
 
@@ -47,7 +47,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
 	protected void configure(HttpSecurity http) throws Exception {
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().exceptionHandling()
 				.authenticationEntryPoint(authenticationEntryPoint).and()
-				.authorizeRequests((request) -> request.antMatchers("/h2-console/**", "/api/login", "/api/signup").permitAll()
+				.authorizeRequests((request) -> request.antMatchers("/h2-console/**", "/api/login", "/api/signup", "/api/passwordReset").permitAll()
 						.antMatchers(HttpMethod.GET, "/**").permitAll()
 						.antMatchers("/swagger-ui/**", "/javainuse-openapi/**").permitAll().anyRequest().authenticated())
 				.addFilterBefore(new JWTAuthenticationFilter(userService, jWTTokenHelper),

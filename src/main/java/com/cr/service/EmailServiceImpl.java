@@ -7,6 +7,7 @@ import javax.mail.internet.MimeMessage;
 import com.cr.model.EmailDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -55,16 +56,14 @@ public class EmailServiceImpl implements EmailService {
 				= new MimeMessageHelper(mimeMessage, true);
 			mimeMessageHelper.setFrom(sender);
 			mimeMessageHelper.setTo(details.getRecipient());
-			mimeMessageHelper.setText(details.getMsgBody());
+			mimeMessageHelper.setText(details.getMsgBody(), true);
 			mimeMessageHelper.setSubject(
 				details.getSubject());
 
-			FileSystemResource file
-				= new FileSystemResource(
-					new File(details.getAttachment()));
+			ClassPathResource file
+				= new ClassPathResource(details.getAttachment());
 
-			mimeMessageHelper.addAttachment(
-				file.getFilename(), file);
+			mimeMessageHelper.addInline("logo", file);
 
 			javaMailSender.send(mimeMessage);
 			return "Mail sent Successfully";
