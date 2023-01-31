@@ -1,35 +1,24 @@
-package com.cr.entity;
+package com.cr.request;
 
-import javax.persistence.*;
 
-@Table(name = "USER_TRAINING_T")
-@Entity
-public class Training {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+public class TrainingRequest {
+    private Long userId;
     private Long id;
-
-    @Column(name = "training1")
     private String training1;
-
-    @Column(name = "training2")
     private String training2;
-
-    @Column(name = "training3")
     private String training3;
-
-    @Column(name = "experience1")
     private String experience1;
-
-    @Column(name = "experience2")
     private String experience2;
-
-    @Column(name = "experience3")
     private String experience3;
 
-    @OneToOne(mappedBy = "training")
-    private  User user;
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
 
     public Long getId() {
         return id;
@@ -85,13 +74,5 @@ public class Training {
 
     public void setExperience3(String experience3) {
         this.experience3 = experience3;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 }

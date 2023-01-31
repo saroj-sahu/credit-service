@@ -12,7 +12,7 @@ public class Rank {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "rank_id", nullable = false)
+    @Column(name = "rank_id", nullable = true)
     private String rankId;
 
     @Column(name = "rank_name", nullable = false)

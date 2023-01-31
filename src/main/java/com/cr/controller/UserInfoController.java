@@ -2,12 +2,15 @@ package com.cr.controller;
 
 import com.cr.entity.Authority;
 import com.cr.entity.Rank;
+import com.cr.entity.Training;
 import com.cr.entity.User;
 import com.cr.model.EmailDetails;
 import com.cr.repository.AuthorityRepository;
 import com.cr.repository.RankRepository;
+import com.cr.repository.TraningRepository;
 import com.cr.repository.UserDetailsRepository;
 import com.cr.request.PasswordResetRequest;
+import com.cr.request.TrainingRequest;
 import com.cr.request.UserProfileRequest;
 import com.cr.response.UserProfileResponse;
 import com.cr.service.EmailService;
@@ -48,6 +51,9 @@ public class UserInfoController {
 
     @Autowired
     private SpringTemplateEngine templateEngine;
+
+    @Autowired
+    private TraningRepository traningRepository;
 
     @Value("${service.host}")
     String serverName;
@@ -200,9 +206,41 @@ public class UserInfoController {
         return ResponseEntity.ok("Success");
     }
 
+    @PostMapping(path = "/update-training")
+    public ResponseEntity updateTraining(@RequestBody TrainingRequest request){
+        Optional<Training> training = traningRepository.findById(request.getId());
+        if(training.isPresent()){
+            Training value = training.get();
+            value.setTraining1(request.getTraining1());
+            value.setTraining2(request.getTraining2());
+            value.setTraining3(request.getTraining3());
+            value.setExperience1(request.getExperience1());
+            value.setExperience2(request.getExperience2());
+            value.setExperience3(request.getExperience3());
+            traningRepository.saveAndFlush(value);
+        }else{
+            Optional<User> user = userDetailsRepository.findById(request.getUserId());
+            if(user.isPresent()){
+                Training value = new Training();
+                value.setTraining1(request.getTraining1());
+                value.setTraining2(request.getTraining2());
+                value.setTraining3(request.getTraining3());
+                value.setExperience1(request.getExperience1());
+                value.setExperience2(request.getExperience2());
+                value.setExperience3(request.getExperience3());
+                value.setUser(user.get());
+                traningRepository.saveAndFlush(value);
+            }
+        }
+        return ResponseEntity.ok("Updated");
+    }
+
+
     public static void main(String args[]){
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         String pass = encoder.encode("admin");
         System.out.println(pass);
     }
+
+
 }

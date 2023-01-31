@@ -32,6 +32,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Tag(description = "Reference api's that provides access to availabe reference data",
         name = "Reference API")
@@ -238,13 +239,13 @@ public class ReferenceController {
 
 
     @PostMapping("/uploadRankImage")
-    public ResponseEntity uploadRankImageFile(@RequestParam("rankName") String rankName, @RequestParam("file") MultipartFile file) throws IOException, SQLException {
+    public ResponseEntity uploadRankImageFile(@RequestParam("rankId") Long rankId, @RequestParam("file") MultipartFile file) throws IOException, SQLException {
         String message = "";
-        Rank rank = rankRepository.findByRankName(rankName);
+        Optional<Rank> rank = rankRepository.findById(rankId);
         byte []byteArray = file.getBytes();
         Blob blob = new SerialBlob(byteArray);
-        rank.setRankImage(blob);
-        rankRepository.save(rank);
+        rank.get().setRankImage(blob);
+        rankRepository.save(rank.get());
         return (ResponseEntity) ResponseEntity.ok();
     }
 

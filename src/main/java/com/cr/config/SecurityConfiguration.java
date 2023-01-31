@@ -47,7 +47,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
 	protected void configure(HttpSecurity http) throws Exception {
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().exceptionHandling()
 				.authenticationEntryPoint(authenticationEntryPoint).and()
-				.authorizeRequests((request) -> request.antMatchers("/h2-console/**", "/api/login", "/api/signup", "/api/passwordReset").permitAll()
+				.authorizeRequests((request) -> request.antMatchers("/h2-console/**", "/api/login", "/api/signup", "/api/passwordReset"
+								,"/api/uploadStates", "/api/uploadCities", "/api/uploadBranch", "/api/uploadRanks", "/api/uploadRankImage").permitAll()
 						.antMatchers(HttpMethod.GET, "/**").permitAll()
 						.antMatchers("/swagger-ui/**", "/javainuse-openapi/**").permitAll().anyRequest().authenticated())
 				.addFilterBefore(new JWTAuthenticationFilter(userService, jWTTokenHelper),
